@@ -69,7 +69,7 @@ namespace SparrowAPI.Core.Services
             }
             if (result.IsLockedOut)
             {
-                return new ServiceResponse(false, "Useris locked. Connect with your site admistrator.");
+                return new ServiceResponse(false, "User is locked. Connect with your site admistrator.");
             }
             return new ServiceResponse(false, "User or password incorect");
         }
@@ -184,7 +184,10 @@ namespace SparrowAPI.Core.Services
             string url = $"{_configuration["HostSettings:URL"]}/Dashboard/confirmemail?userid={user.Id}&token={validEmailToken}";
 
             string emailBody = $"<h1>Confirm your email</h1> <a href='{url}'>Confirm now!</a>";
-            await _emailService.SendEmailAsync(user.Email, "Email confirmation.", emailBody);
+            //await _emailService.SendEmailAsync(user.Email, "Email confirmation.", emailBody);
+
+            // тимчасово для реєстрації користувача
+            await ConfirmEmailAsync(user.Id, validEmailToken);
         }
 
         public async Task<ServiceResponse> ConfirmEmailAsync(string userId, string token)

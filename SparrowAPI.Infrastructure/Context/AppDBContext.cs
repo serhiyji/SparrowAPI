@@ -19,6 +19,7 @@ namespace SparrowAPI.Infrastructure.Context
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.SeedCategories();
+            modelBuilder.SeedRoles();
         }
     }
 }
