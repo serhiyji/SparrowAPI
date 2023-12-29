@@ -8,6 +8,9 @@ using SparrowAPI.Core.DTOs.Category;
 using SparrowAPI.Core.Interfaces;
 using SparrowAPI.Core.Entities;
 using SparrowAPI.Core.Entities.Specifications;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace SparrowAPI.Core.Services
 {
@@ -15,14 +18,36 @@ namespace SparrowAPI.Core.Services
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Category> _categoryRepo;
-        public CategoryService(IMapper mapper, IRepository<Category> categoryRepo)
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public CategoryService(IMapper mapper, IRepository<Category> categoryRepo, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             this._mapper = mapper;
             this._categoryRepo = categoryRepo;
+            this._webHostEnvironment = webHostEnvironment;
+            this._configuration = configuration;
         }
 
-        public async Task Create(CategoryDto model)
+        public async Task Create(CreateCategoryDto model)
         {
+            if (model.Image != null)
+            {
+                string webRootPath = _webHostEnvironment.WebRootPath;
+                string upload = webRootPath + _configuration.GetValue<string>("ImageSettings:ImagePathCategories");
+                IFormFile files = model.Image;
+                string fileName = Guid.NewGuid().ToString();
+                string extansions = Path.GetExtension(files.FileName);
+                using (FileStream fileStream = new FileStream(Path.Combine(upload, fileName + extansions), FileMode.Create))
+                {
+                    files.CopyTo(fileStream);
+                }
+
+                model.ImagePath = fileName + extansions;
+            }
+            else
+            {
+                model.ImagePath = "Default.png";
+            }
             await _categoryRepo.Insert(_mapper.Map<Category>(model));
             await _categoryRepo.Save();
         }
@@ -31,6 +56,15 @@ namespace SparrowAPI.Core.Services
         {
             CategoryDto? model = await Get(id);
             if (model == null) return;
+
+            string webPathRoot = _webHostEnvironment.WebRootPath;
+            string upload = webPathRoot + _configuration.GetValue<string>("ImageSettings:ImagePathCategories");
+            string existingFilePath = Path.Combine(upload, model.ImagePath);
+            if (File.Exists(existingFilePath) && model.ImagePath != "Default.png")
+            {
+                File.Delete(existingFilePath);
+            }
+
             await _categoryRepo.Delete(id);
             await _categoryRepo.Save();
         }
@@ -60,7 +94,7 @@ namespace SparrowAPI.Core.Services
             return _mapper.Map<List<CategoryDto>>(result);
         }
 
-        public async Task Update(CategoryDto model)
+        public async Task Update(UpdateCategoryDto model)
         {
             await _categoryRepo.Update(_mapper.Map<Category>(model));
             await _categoryRepo.Save();

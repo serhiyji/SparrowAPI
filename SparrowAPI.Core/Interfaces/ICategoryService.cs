@@ -13,8 +13,8 @@ namespace SparrowAPI.Core.Interfaces
         Task<List<CategoryDto>> GetAll();
         Task<CategoryDto?> Get(int id);
         Task<ServiceResponse> GetByName(CategoryDto model);
-        Task Create(CategoryDto model);
-        Task Update(CategoryDto model);
+        Task Create(CreateCategoryDto model);
+        Task Update(UpdateCategoryDto model);
         Task Delete(int id);
         Task<bool> IsNameCategoryInAllCategories(string NameCategory);
     }

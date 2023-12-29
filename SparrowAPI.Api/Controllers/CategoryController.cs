@@ -22,7 +22,7 @@ namespace SparrowAPI.Api.Controllers
             return Ok(await this._categoryService.GetAll());
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] CategoryDto model)
+        public async Task<IActionResult> Create([FromForm] CreateCategoryDto model)
         {
             var validationResult = await new CreateCategoryValidation().ValidateAsync(model);
             if (validationResult.IsValid)
@@ -33,9 +33,9 @@ namespace SparrowAPI.Api.Controllers
             return BadRequest(validationResult.Errors.FirstOrDefault());
         }
         [HttpPost("Update")]
-        public async Task<IActionResult> Update([FromBody] CategoryDto model)
+        public async Task<IActionResult> Update([FromBody] UpdateCategoryDto model)
         {
-            var validationResult = await new CreateCategoryValidation().ValidateAsync(model);
+            var validationResult = await new UpdateCategoryValidation().ValidateAsync(model);
             if (validationResult.IsValid)
             {
                 await this._categoryService.Update(model);
@@ -44,7 +44,7 @@ namespace SparrowAPI.Api.Controllers
             return BadRequest(validationResult.Errors.FirstOrDefault());
         }
         [HttpPost("Delete")]
-        public async Task<IActionResult> Delete([FromBody] CategoryDto model)
+        public async Task<IActionResult> Delete([FromBody] DeleteCategoryDto model)
         {
             await this._categoryService.Delete(model.Id);
             return Ok();

@@ -14,6 +14,9 @@ namespace SparrowAPI.Core.AutoMapper.Categories
         public AutoMapperCategoryProfile()
         {
             CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CreateCategoryDto>().ReverseMap();
+            CreateMap<Category, UpdateCategoryDto>().ReverseMap();
+            CreateMap<Category, DeleteCategoryDto>().ReverseMap();
         }
     }
 }
