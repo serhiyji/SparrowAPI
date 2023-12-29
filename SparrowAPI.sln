@@ -3,7 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparrowAPI.Core", "SparrowAPI.Core\SparrowAPI.Core.csproj", "{0C2486F2-1098-4731-9474-7144CD5FCC73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparrowAPI.Infrastructure", "SparrowAPI.Infrastructure\SparrowAPI.Infrastructure.csproj", "{A94E8294-22AE-4EAB-B08E-AA24F59DBA11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparrowAPI.Api", "SparrowAPI.Api\SparrowAPI.Api.csproj", "{D7C5F4FA-300D-4C42-AAF1-A5D90F77FDE0}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C2486F2-1098-4731-9474-7144CD5FCC73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C2486F2-1098-4731-9474-7144CD5FCC73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C2486F2-1098-4731-9474-7144CD5FCC73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C2486F2-1098-4731-9474-7144CD5FCC73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A94E8294-22AE-4EAB-B08E-AA24F59DBA11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A94E8294-22AE-4EAB-B08E-AA24F59DBA11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A94E8294-22AE-4EAB-B08E-AA24F59DBA11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A94E8294-22AE-4EAB-B08E-AA24F59DBA11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C5F4FA-300D-4C42-AAF1-A5D90F77FDE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C5F4FA-300D-4C42-AAF1-A5D90F77FDE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C5F4FA-300D-4C42-AAF1-A5D90F77FDE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C5F4FA-300D-4C42-AAF1-A5D90F77FDE0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
