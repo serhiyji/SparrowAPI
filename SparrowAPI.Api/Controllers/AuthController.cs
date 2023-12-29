@@ -3,12 +3,13 @@
 namespace SparrowAPI.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
-        public IActionResult Index()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-            return View();
+            return Ok(null);
         }
     }
 }
