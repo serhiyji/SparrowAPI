@@ -11,6 +11,8 @@ using SparrowAPI.Core.Entities.Specifications;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp;
 
 namespace SparrowAPI.Core.Services
 {
@@ -33,16 +35,32 @@ namespace SparrowAPI.Core.Services
             if (model.Image != null)
             {
                 string webRootPath = _webHostEnvironment.WebRootPath;
-                string upload = webRootPath + _configuration.GetValue<string>("ImageSettings:ImagePathCategories");
-                IFormFile files = model.Image;
+                string uploadPath = webRootPath + _configuration.GetValue<string>("ImageSettings:ImagePathCategories");
                 string fileName = Guid.NewGuid().ToString();
-                string extansions = Path.GetExtension(files.FileName);
-                using (FileStream fileStream = new FileStream(Path.Combine(upload, fileName + extansions), FileMode.Create))
+                string extansion = Path.GetExtension(model.Image.FileName);
+                string originalFilePath = Path.Combine(uploadPath, fileName + extansion);
+                using (FileStream fileStream = new FileStream(originalFilePath, FileMode.Create))
                 {
-                    files.CopyTo(fileStream);
+                    await model.Image.CopyToAsync(fileStream);
                 }
 
-                model.ImagePath = fileName + extansions;
+                List<int> sizes = new List<int> { 50, 150, 300, 600, 1200 };
+                foreach (int size in sizes)
+                {
+                    string resizedFileName = size + "_" + fileName;
+                    string resizedFilePath = Path.Combine(uploadPath, resizedFileName + extansion);
+                    using (var image = SixLabors.ImageSharp.Image.Load(originalFilePath))
+                    {
+                        image.Mutate(x => x.Resize(new ResizeOptions
+                        {
+                            Size = new Size(size, 0),
+                            Mode = ResizeMode.Max
+                        }));
+                        await image.SaveAsync(resizedFilePath);
+                    }
+                }
+
+                model.ImagePath = fileName + extansion;
             }
             else
             {
@@ -63,6 +81,17 @@ namespace SparrowAPI.Core.Services
             if (File.Exists(existingFilePath) && model.ImagePath != "Default.png")
             {
                 File.Delete(existingFilePath);
+            }
+
+            List<int> sizes = new List<int> { 50, 150, 300, 600, 1200 };
+            foreach (int size in sizes)
+            {
+                string resizedFileName = size + "_" + Path.GetFileNameWithoutExtension(model.ImagePath);
+                string resizedFilePath = Path.Combine(upload, resizedFileName + Path.GetExtension(model.ImagePath));
+                if (File.Exists(resizedFilePath))
+                {
+                    File.Delete(resizedFilePath);
+                }
             }
 
             await _categoryRepo.Delete(id);
