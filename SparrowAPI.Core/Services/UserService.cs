@@ -16,6 +16,7 @@ using SparrowAPI.Core.DTOs.User;
 using SparrowAPI.Core.Entities.Token;
 using SparrowAPI.Core.Entities.User;
 using SparrowAPI.Core.Interfaces;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SparrowAPI.Core.Services
 {
@@ -28,6 +29,7 @@ namespace SparrowAPI.Core.Services
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IJwtService _jwtService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public UserService(
                 UserManager<AppUser> userManager, 
@@ -36,7 +38,8 @@ namespace SparrowAPI.Core.Services
                 EmailService emailService, 
                 IMapper mapper, 
                 IConfiguration configuration,
-                IJwtService jwtService
+                IJwtService jwtService,
+                IWebHostEnvironment webHostEnvironment
             )
         {
             this._signInManager = signInManager;
@@ -46,6 +49,7 @@ namespace SparrowAPI.Core.Services
             this._mapper = mapper;
             this._configuration = configuration;
             this._jwtService = jwtService;
+            this._webHostEnvironment = webHostEnvironment;
         }
 
         #region SignIn, SignOut
@@ -113,6 +117,24 @@ namespace SparrowAPI.Core.Services
         #region Create user, Delete user, Edit password user, Edit main info user
         public async Task<ServiceResponse> CreateUserAsync(CreateUserDto model)
         {
+            if (model.Image != null)
+            {
+                string webRootPath = _webHostEnvironment.WebRootPath;
+                string upload = webRootPath + _configuration.GetValue<string>("ImageSettings:ImagePathUsers");
+                IFormFile files = model.Image;
+                string fileName = Guid.NewGuid().ToString();
+                string extansions = Path.GetExtension(files.FileName);
+                using (FileStream fileStream = new FileStream(Path.Combine(upload, fileName + extansions), FileMode.Create))
+                {
+                    files.CopyTo(fileStream);
+                }
+
+                model.ImagePath = fileName + extansions;
+            }
+            else
+            {
+                model.ImagePath = "Default.png";
+            }
             AppUser NewUser = _mapper.Map<CreateUserDto, AppUser>(model);
             IdentityResult result = await _userManager.CreateAsync(NewUser, model.Password);
             if (result.Succeeded)
@@ -131,6 +153,15 @@ namespace SparrowAPI.Core.Services
             {
                 return new ServiceResponse(false, "User a was found");
             }
+
+            string webPathRoot = _webHostEnvironment.WebRootPath;
+            string upload = webPathRoot + _configuration.GetValue<string>("ImageSettings:ImagePathUsers");
+            string existingFilePath = Path.Combine(upload, userdelete.ImagePath);
+            if (File.Exists(existingFilePath) && userdelete.ImagePath != "Default.png")
+            {
+                File.Delete(existingFilePath);
+            }
+
             IdentityResult result = await _userManager.DeleteAsync(userdelete);
             if (result.Succeeded)
             {

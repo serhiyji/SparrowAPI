@@ -37,7 +37,7 @@ namespace SparrowAPI.Api.Controllers
             return BadRequest(validationResult.Errors.FirstOrDefault());
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CreateUserDto model)
+        public async Task<IActionResult> Register([FromForm] CreateUserDto model)
         {
             var validationResult = await new CreateUserValidation().ValidateAsync(model);
             if (validationResult.IsValid)
@@ -52,7 +52,7 @@ namespace SparrowAPI.Api.Controllers
             return Ok(validationResult.Errors.FirstOrDefault());
         }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteUser(DeleteUserDto model)
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserDto model)
         {
             ServiceResponse result = await _userService.DeleteUserAsync(model.Id);
             if (result.Success)
